@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "538583991247",
+    "firebase_url": "https://checkroad-c7ab1.firebaseio.com",
+    "project_id": "checkroad-c7ab1",
+    "storage_bucket": "checkroad-c7ab1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:538583991247:android:7aae75641959f717ea48ba",
+        "android_client_info": {
+          "package_name": "com.checkroadnew"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "538583991247-g8or6i4svfl9j294s8mc8k8nnfik5hv6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_g2bqPrS8GK0Fq76M1SW4V6rDfYJw8QA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "538583991247-g8or6i4svfl9j294s8mc8k8nnfik5hv6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
