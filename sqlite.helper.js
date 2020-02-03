@@ -3,45 +3,58 @@ import SQLite from 'react-native-sqlite-storage';
 var db = null;
 export default class SqliteHelper {
 
-  static okCallback = () => {
-    // alert('okCallback')
-  }
+  okCallback = () => {
+    alert('okCallback')
+}
 
-  static errorCallback = (error) => {
-    alert('errorCallback: ' +  error)
-  }
+errorCallback = () => {
+    alert('errorCallback')
+}
 
   static openDB() {
-    db = SQLite.openDatabase({name: "db_doctor", location: 1}, this.okCallback, this.errorCallback);
+    db = SQLite.openDatabase({ name: 'text6', createFromLocation: '~www/warning.db' }, this.okCallback, this.errorCallback);
     return db;
   }
 
-  static getHospital = (hospitalName) => {
-    hospitalName = hospitalName || '';
+  static getWarning = () => {
     return new Promise(function (resolve, reject) {
       db.transaction( tx => {
-        var sql = "SELECT * FROM hospital WHERE name LIKE '%"+hospitalName+"%'";
+        var sql = "SELECT * FROM warninginfo";
         tx.executeSql(sql, [], (tx, results) => {
           resolve(results);
         });
       });
     });
   };
-  // static getAppointmentWaiting = (hospitalName) =>{
-  //   return new Promise(function (resolve, reject) {
-  //     db.transaction(tx => {
-  //       let sql = "SELECT * FROM hospital WHERE name like '%"+hospitalName+"%'";
-  //       tx.executeSql(sql, [], (tx, results) => {
-  //         resolve(results);
-  //       });
-  //     });
-  //   });
-  // };
-  static  async addHospital(domain, username, hospitalName, password)  {
+
+  static getWarningByName = () => {
+    return new Promise(function (resolve, reject) {
+      db.transaction( tx => {
+        var sql = "SELECT * FROM warning";
+        tx.executeSql(sql, [], (tx, results) => {
+          resolve(results);
+        });
+      });
+    });
+  };
+  
+
+  static  async addWaring(value,range,latitude,longitude) {
     return await new Promise(function (resolve, reject){
       db.transaction(tx => {
-        var sql = "INSERT INTO hospital(id, name, domain, user, password) VALUES (?,?,?,?,?)";
-        tx.executeSql(sql, [domain, hospitalName, domain, username, password], (tx, results) => {
+        var sql = "INSERT INTO warninginfo(value, range, latitude, longitude) VALUES (?,?,?,?)";
+        console.log('completed')
+        tx.executeSql(sql, [value, range, latitude, longitude], (tx, results) => {
+          resolve(results);
+        });
+      })
+    });
+  };
+  static  async addWaringNew(value) {
+    return await new Promise(function (resolve, reject){
+      db.transaction(tx => {
+        var sql = "INSERT INTO warning(value) VALUES (?)";
+        tx.executeSql(sql, [value], (tx, results) => {
           resolve(results);
         });
       })
