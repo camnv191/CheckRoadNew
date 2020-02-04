@@ -65,27 +65,11 @@ export default class road extends Component {
                             <Text style={{ fontWeight: 'bold' }}>Vị trí của bạn</Text>
                         </Callout>
                     </Marker>
-                    {/* <FlatList
-                        data={this.state.Listwarning}
-                        renderItem={({ item }) => (
-                            <Marker
-                                coordinate={{
-                                    latitude: item.latitude,
-                                    longitude:item.longitude,
-                        }}
-                                image={require('./image/fender-bender.png')}
-                            >
-                                <Callout>
-                                    <Text style={{ color: 'red', fontWeight: "bold" }}>Nơi thường xuyên xảy ra tai nạn</Text>
-                                </Callout>
-                            </Marker>
-                        )
-                        }
-                    /> */}
+
                      {this.state.Listwarning.length > 0 && this.state.Listwarning.map(marker => (
                             <Marker
                             coordinate={marker}
-                            title = {marker.value}
+                            title = {marker.range +'m: ' + marker.value}
                             pinColor={'yellow'}
                             description={marker.description}
                             />

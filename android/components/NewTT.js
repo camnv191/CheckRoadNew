@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Dropdown } from 'react-native-material-dropdown';
-import { View, FlatList, Text, Button } from 'react-native';
+import { View, FlatList, Text, Button, Alert } from 'react-native';
 import SqliteHelper from '../../sqlite.helper';
 import { TextInput } from 'react-native-gesture-handler';
 import Geolocation from '@react-native-community/geolocation';
@@ -19,9 +19,47 @@ class NewTT extends Component {
     }
   }
 
+
+  // CheckTextInput = () => {
+
+  // };
+
   NewWarning() {
-    SqliteHelper.addWaring(this.state.value, this.state.range, this.state.latitude, this.state.longitude)
-    this.props.navigation.navigate('MapScreen')
+    if (this.state.value != '') {
+      if (this.state.range != '') {
+        SqliteHelper.addWaring(this.state.value, this.state.range, this.state.latitude, this.state.longitude)
+        this.props.navigation.navigate('MapScreen')
+      } else {
+        Alert.alert(
+          'Thông báo: thêm thất bại',
+          'Vui lòng nhập khoảng cách',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => this.props.navigation.navigate('MapScreen'),
+              style: 'cancel',
+            },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ],
+          { cancelable: false },
+        );
+      }
+    } else {
+      Alert.alert(
+        'Thông báo: thêm thất bại',
+        'Vui lòng chọn cảnh báo',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => this.props.navigation.navigate('MapScreen'),
+            style: 'cancel',
+          },
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ],
+        { cancelable: false },
+      );
+    }
+
   }
 
   componentDidMount() {

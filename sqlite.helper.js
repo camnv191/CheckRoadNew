@@ -12,7 +12,7 @@ errorCallback = () => {
 }
 
   static openDB() {
-    db = SQLite.openDatabase({ name: 'text6', createFromLocation: '~www/warning.db' }, this.okCallback, this.errorCallback);
+    db = SQLite.openDatabase({ name: 'connectDB', createFromLocation: '~www/warning.db' }, this.okCallback, this.errorCallback);
     return db;
   }
 
@@ -37,13 +37,24 @@ errorCallback = () => {
       });
     });
   };
+
+  static  async deleteWarning(value) {
+    return await new Promise(function (resolve, reject){
+      db.transaction(tx => {
+        var sql = "DELETE FROM warning WHERE value = ?";
+        console.log('delete complete')
+        tx.executeSql(sql, [], (tx, results)=>{
+          resolve(results);
+        });
+      })
+    });
+  };
   
 
   static  async addWaring(value,range,latitude,longitude) {
     return await new Promise(function (resolve, reject){
       db.transaction(tx => {
         var sql = "INSERT INTO warninginfo(value, range, latitude, longitude) VALUES (?,?,?,?)";
-        console.log('completed')
         tx.executeSql(sql, [value, range, latitude, longitude], (tx, results) => {
           resolve(results);
         });
