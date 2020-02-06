@@ -5,7 +5,7 @@ import Geolocation from '@react-native-community/geolocation';
 import SqliteHelper from '../../sqlite.helper';
 
 SqliteHelper.openDB();
-
+console.disableYellowBox = true;
 export default class road extends Component {
     // latitude: 16.0324246,
     //     longitude: 108.2184286,
@@ -66,20 +66,20 @@ export default class road extends Component {
                         </Callout>
                     </Marker>
 
-                     {this.state.Listwarning.length > 0 && this.state.Listwarning.map(marker => (
-                            <Marker
+                    {this.state.Listwarning.length > 0 && this.state.Listwarning.map(marker => (
+                        <Marker key={marker.id}
                             coordinate={marker}
-                            title = {marker.range +'m: ' + marker.value}
+                            title={marker.range + 'm: ' + marker.value}
                             pinColor={'yellow'}
                             description={marker.description}
-                            />
-                        ))}
+                        />
+                    ))}
 
 
                 </MapView>
 
-                <View style={{ flex: 1.5, marginTop: -34, flexDirection: "column" }}>
-                    <View style={{ flex: 0, width: 70, marginLeft: 310 }}>
+                <View style={{ flex: 1.5, marginTop: -35, flexDirection: "column" }}>
+                    <View op style={{ flex: 0, width: 70, marginLeft: 300}}>
                         <Button style={{ flex: 1 }} title={'Về giữa'}
                             onPress={() =>
                                 this.componentDidMount()
@@ -87,13 +87,13 @@ export default class road extends Component {
                         />
                     </View>
                     <View style={{ flex: 2, flexDirection: "row" }}>
-                        <View style={{ flex: 1, width: 65, justifyContent:"center", marginLeft:10 }}>
+                        <View style={{ flex: 1, width: 65, justifyContent: "center", marginLeft: 10 }}>
                             <Button title='New Warning' onPress={() => this.props.navigation.navigate('NewLScreen')} />
                         </View>
                         <View style={{ flex: 2 }}>
-                            
+
                         </View>
-                        <View style={{ flex: 1, width: 65, justifyContent:"center", marginRight:10 }}>
+                        <View style={{ flex: 1, width: 65, justifyContent: "center", marginRight: 10 }}>
                             <Button title='New Location' onPress={() => this.props.navigation.navigate('NewTTScreen')} />
                         </View>
                     </View>
@@ -102,3 +102,6 @@ export default class road extends Component {
         )
     }
 }
+// const styles = StyleSheet.create({
+
+// })

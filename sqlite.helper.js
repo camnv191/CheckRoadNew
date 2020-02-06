@@ -10,9 +10,9 @@ export default class SqliteHelper {
 errorCallback = () => {
     alert('errorCallback')
 }
-
+//warningDB
   static openDB() {
-    db = SQLite.openDatabase({ name: 'connectDB', createFromLocation: '~www/warning.db' }, this.okCallback, this.errorCallback);
+    db = SQLite.openDatabase({ name: 'coronawarningdb', createFromLocation: '~www/warning.db' }, this.okCallback, this.errorCallback);
     return db;
   }
 
@@ -42,8 +42,7 @@ errorCallback = () => {
     return await new Promise(function (resolve, reject){
       db.transaction(tx => {
         var sql = "DELETE FROM warning WHERE value = ?";
-        console.log('delete complete')
-        tx.executeSql(sql, [], (tx, results)=>{
+        tx.executeSql(sql, [value], (tx, results)=>{ 
           resolve(results);
         });
       })
