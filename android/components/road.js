@@ -79,12 +79,12 @@ export default class road extends Component {
                 </MapView>
 
                 <View style={{ flex: 1.5, marginTop: -35, flexDirection: "column" }}>
-                    <View op style={{ flex: 0, width: 70, marginLeft: 300}}>
-                        <Button style={{ flex: 1 }} title={'Về giữa'}
-                            onPress={() =>
-                                this.componentDidMount()
-                            }
-                        />
+                    <View op style={{ flex: 0, width: 70, marginLeft: 320}}>
+                        <TouchableOpacity onPress = {() => this.componentDidMount()}>
+                            <Image
+                                source={require('./image/compass.png')}
+                            />
+                        </TouchableOpacity>
                     </View>
                     <View style={{ flex: 2, flexDirection: "row" }}>
                         <View style={{ flex: 1, width: 65, justifyContent: "center", marginLeft: 10 }}>
