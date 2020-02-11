@@ -1,78 +1,69 @@
 import React, { Component } from 'react'
-import { Text, View, Button, FlatList, Alert, ScrollView } from 'react-native'
+import { Text, View, Button, Alert, Image } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 import SqliteHelper from '../../sqlite.helper'
 import validator from 'validator'
+import ImagePicker from 'react-native-image-picker';
+
 
 SqliteHelper.openDB();
-
-
-
+SqliteHelper.createWarning();
 export class NewL extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: "",
+            name: "",
+            iconname: "",
             warning: [],
+            filePath: {},
+
         }
     }
 
-    Delete() {
-        if (this.state.value != "") {
-            for (let i = 0; i < this.state.warning.length; i++) {
-                let a = validator.trim(this.state.value.substring(0, 1).toUpperCase() + this.state.value.substring(1))
-                if (validator.equals(this.state.warning[i].value, a)) {
-                    return (SqliteHelper.deleteWarning(a),
-                    this.ClearInput())
-                }
-            } Alert.alert(
-                'không tìm thấy dữ liệu muốn xóa',
-                'vui lòng nhập lại')
-        }
-    }
+    chooseFile = () => {
+        var options = {
+            title: 'Choose image',
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+        ImagePicker.showImagePicker(options, response => {
+            console.log('Response = ', response);
 
-    componentWillUpdate() {
-        this.UNSAFE_componentWillMount()
-    }
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+                alert(response.customButton);
+            } else {
+                // let source = response;
+                this.setState({
+                    filePath: response,
+                });
+            }
+        });
+    };
 
     ClearInput() {
         this.clear.setNativeProps({ text: '' })
+        this.clear2.setNativeProps({ text: '' })
     }
     New() {
-        if (this.state.value != "") {
-            for (let j = 0; j < this.state.warning.length; j++) {
-                if (validator.equals(this.state.warning[j].value, this.state.value)) {
-                    return (Alert.alert(
-                        'Thêm thất bại',
-                        'Dữ liệu đã có',
-                    ),
-                        this.ClearInput());
-                }
-            }
-            let a = validator.trim(this.state.value.substring(0, 1).toUpperCase() + this.state.value.substring(1))
-            SqliteHelper.addWaringNew(a)
-            this.ClearInput()
-        } else {
-            Alert.alert(
-                'Thông báo: thêm thất bại',
-                'Vui lòng nhập tên cảnh báo',
-                [
-                    {
-                        text: 'Cancel',
-                        onPress: () => this.props.navigation.navigate('MapScreen'),
-                        style: 'cancel',
-                    },
-                    { text: 'OK', onPress: () => console.log('OK Pressed') },
-                ],
-                { cancelable: false },
-            );
-        }
+        if (this.state.name == null || this.state.filePath || this.state.iconname == null) {
+            Alert.alert('không để trống dữ liệu',
+                'Vui lòng nhập thông tin và chọn ảnh'
+            )
+        } return (console.log(this.state.filePath),
+            SqliteHelper.addWaring(this.state.name, this.state.filePath, this.state.iconname),
+            this.ClearInput())
     }
-
 
     UNSAFE_componentWillMount = async () => {
         let listTemp = [];
-        let temp = await SqliteHelper.getWarningByName();
+        let temp = await SqliteHelper.getWarning();
         for (let i = 0; i < temp.rows.length; i++) {
             const item = temp.rows.item(i);
             listTemp.push(item);
@@ -94,8 +85,8 @@ export class NewL extends Component {
                         }}>Nhập tên cảnh báo mới:</Text>
                 </View>
                 <View style={{ alignItems: "center" }}>
-                    <TextInput value={this.state.value}
-                        onChangeText={value => this.setState({ value })}
+                    <TextInput value={this.state.name}
+                        onChangeText={name => this.setState({ name })}
                         ref={component => this.clear = component}
                         style={{
                             height: 40,
@@ -108,33 +99,59 @@ export class NewL extends Component {
                         placeholder="Nhập tên cảnh báo tại đây !.........."
                     />
                 </View>
+                <View>
+                    <Text
+                        style={{
+                            fontWeight: "bold",
+                            fontSize: 17,
+                            marginLeft: 10
+                        }}>Chọn icon cảnh báo:</Text>
+                </View>
+                <View style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <Image
+                        source={{
+                            uri: 'data:image/jpeg;base64,' + this.state.filePath.data,
+                        }}
+                        style={{ width: 100, height: 100, marginTop: 10, marginBottom: 10 }}
+                    />
+                    <Button title="Choose File" onPress={this.chooseFile.bind(this)} />
+                </View>
+                <View>
+                    <Text
+                        style={{
+                            fontWeight: "bold",
+                            fontSize: 17,
+                            marginLeft: 10
+                        }}>Nhập tên icon:</Text>
+                </View>
+                <View style={{ alignItems: "center" }}>
+                    <TextInput
+                        value={this.state.iconname}
+                        onChangeText={iconname => this.setState({ iconname })}
+                        ref={component => this.clear2 = component}
+                        style={{
+                            height: 40,
+                            backgroundColor: 'azure',
+                            width: 350,
+                            borderWidth: 1,
+                            borderColor: 'black',
+                            marginTop: 10,
+                        }}
+                        placeholder="Nhập tên icon cảnh báo tại đây !.........."
+                    />
+                </View>
                 <View style={{ flexDirection: "row", marginTop: 5, justifyContent: "flex-start" }}>
                     <View style={{ width: 70, marginLeft: 16 }}>
                         <Button title='Add' onPress={() => this.New()} />
                     </View>
                     <View style={{ marginLeft: 16 }}>
-                        <Button title='Delete' onPress={() => this.Delete()} />
+                        <Button title='Show list' onPress={() => this.props.navigation.navigate('WarningScreen')} />
                     </View>
                 </View>
-                <View style={{ alignItems: "center" }}>
-                    <View>
-                        <Text style={{ fontSize: 17, fontWeight: 'bold' }}>Danh sách cảnh báo đã có:</Text>
-                    </View>
-                    <View style={{ height: 350, width: 200 }}>
-                        <FlatList
-                            keyExtractor={(item, index) => index.toString()}
-                            data={this.state.warning}
-                            renderItem={({ item }) => (
-                                <ScrollView>
-                                    <View>
-                                        <Text>- {item.value}</Text>
-                                    </View>
-                                </ScrollView>
-                            )}
-                        />
-                    </View>
-                </View>
-            </View>
+            </View >
         )
     }
 }

@@ -4,6 +4,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import NewTT from './android/components/NewTT';
 import Road from './android/components/road';
 import NewL from './android/components/NewL';
+import Warning from './android/components/Listwarning'
 const homeNavi = createStackNavigator({
 
   MapScreen: {
@@ -16,6 +17,23 @@ const homeNavi = createStackNavigator({
     screen: NewTT,
     navigationOptions: () => ({
       title: 'Map',
+      headerStyle: {
+        backgroundColor: 'gray',
+        height: 40,
+      },
+      headerTintColor: 'green',
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+      },
+    })
+  },
+
+  WarningScreen: {
+    screen: Warning,
+    navigationOptions: () => ({
+      title: 'ADD NEW WARNING',
       headerStyle: {
         backgroundColor: 'gray',
         height: 40,
