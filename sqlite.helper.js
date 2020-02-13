@@ -12,7 +12,7 @@ errorCallback = () => {
 }
 //warningDB
   static openDB() {
-    db = SQLite.openDatabase({ name: 'ConnectDBRecordWarning', location:1}, this.okCallback, this.errorCallback);
+    db = SQLite.openDatabase({ name: 'ConnectRecordWarningDB', location:1}, this.okCallback, this.errorCallback);
     return db;
   }
 //ConnectRecordWarningDB
@@ -62,12 +62,24 @@ errorCallback = () => {
     });
   };
 
+  static getWarningAndRecordWarning = () => {
+    return new Promise(function (resolve, reject) {
+      db.transaction( tx => {
+        var sql = "SELECT warning.icon,warning.name, recordWarning.latitude, recordWarning.longitude FROM warning  INNER JOIN recordWarning ON  warning.name = recordWarning.name";
+        tx.executeSql(sql, [], (tx, results) => {
+          resolve(results);
+        });
+      });
+    });
+  };
+
   static  async addWaring(name, icon, iconname) {
     return await new Promise(function (resolve, reject){
       db.transaction(tx => {
         var sql = "INSERT INTO warning(name, icon, iconname) VALUES (?,?,?)";
         tx.executeSql(sql, [name, icon, iconname], (tx, results) => {
           resolve(results);
+          console.log(oke)
         });
       })
     });

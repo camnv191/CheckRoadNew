@@ -99,12 +99,11 @@ export default class road extends Component {
         this.setState({
             Listwarning: listTemp
         });
-        this.getLocation()
     }
 
     getLocation = async () => {
         let listTempp = [];
-        let temp = await SqliteHelper.getRecordWarning();
+        let temp = await SqliteHelper.getWarningAndRecordWarning();
         for (let i = 0; i < temp.rows.length; i++) {
             const item = temp.rows.item(i);
             listTempp.push(item);
@@ -112,13 +111,14 @@ export default class road extends Component {
         this.setState({
             warning: listTempp
         });
+        this.UNSAFE_componentWillMount()
     }
 
     New() {
         if (this.state.latitudeMaker == 0 || this.state.longitudeMaker == 0) {
             this.setState({
                 message: true,
-                name:'',
+                name: '',
             })
         } else if (this.state.name == '') {
             this.setState({
@@ -127,12 +127,12 @@ export default class road extends Component {
             })
         } else {
             this.getTime(),
-            SqliteHelper.addRecordWaring(this.state.name, this.state.latitudeMaker, this.state.longitudeMaker, this.state.time, this.state.uid, this.state.note)
+                SqliteHelper.addRecordWaring(this.state.name, this.state.latitudeMaker, this.state.longitudeMaker, this.state.time, this.state.uid, this.state.note)
             this.setState({
                 message: false,
                 message1: false,
                 name: '',
-                note:'',
+                note: '',
             })
             alert("thêm thành công")
         }
@@ -186,18 +186,25 @@ export default class road extends Component {
                     {this.state.warning.length > 0 && this.state.warning.map(marker => (
                         <Marker
                             coordinate={marker}
-                            title={marker.name}
+                            title={marker.name} 
                             pinColor={'yellow'}
-                            image={marker.icon}
                             description={marker.description}
-                        />
+                        >
+                            <Image
+                                source={{
+                                    uri: marker.icon,
+                                }}
+                                style={{ width: 30, height: 30}}
+                            />
+                        </Marker>
+
                     ))}
 
 
                 </MapView>
 
                 <View style={{ flex: 1.5, marginTop: -35, flexDirection: "column" }}>
-                    <View op style={{ flex: 0, width: 70, marginLeft: 320 }}>
+                    <View op style={{ flex: 0, width: 70, marginLeft: 350 }}>
                         <TouchableOpacity onPress={() => this.componentDidMount()}>
                             <Image
                                 source={require('./image/compass.png')}
@@ -312,8 +319,8 @@ export default class road extends Component {
                                         onPress={() => {
                                             this.setState({
                                                 isVisible: !this.state.isVisible,
-                                                message:false,
-                                                message1:false,
+                                                message: false,
+                                                message1: false,
                                             });
                                         }}
                                     />

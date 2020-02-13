@@ -29,8 +29,7 @@ export class NewL extends Component {
             },
         };
         ImagePicker.showImagePicker(options, response => {
-            console.log('Response = ', response);
-
+            
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
@@ -51,26 +50,16 @@ export class NewL extends Component {
         this.clear2.setNativeProps({ text: '' })
     }
     New() {
-        // if(this.state.name =='' ||this.state.filePath==null){
-        //     alert('không được để trống dữ liệu')
-        // }
-        // let a = this.state.filePath.data + this.state.filePath.uri
-        // console.log(a)
-        // SqliteHelper.addWaring(this.state.name, a, this.state.iconname),
-        //     this.ClearInput()
-        // this.setState({
-        //     filePath: {},
-        // })
-        if(this.state.name == ''){
+        if (this.state.name == '') {
             alert("Bạn phải nhập tên cảnh báo")
-        }else if(this.state.filePath=={}){
+        } else if (this.state.filePath == {}) {
             alert('Bạn phải chọn icon phù hợp')
-        }else{
-            SqliteHelper.addWaring(this.state.name, this.state.filePath, this.state.iconname)
+        } else {
+            SqliteHelper.addWaring(this.state.name,this.state.filePath.uri, this.state.iconname)
             this.setState({
-                name:'',
-                filePath:{},
-                iconname:''
+                name: '',
+                filePath: {},
+                iconname: ''
             })
         }
     }
@@ -137,7 +126,7 @@ export class NewL extends Component {
                 }}>
                     <Image
                         source={{
-                            uri: 'data:image/png;base64,' + this.state.filePath.data,
+                            uri: 'data:image/png;base64,'+ this.state.filePath.data,
                         }}
                         style={{ width: 50, height: 50, marginTop: 10, marginBottom: 10 }}
                     />
