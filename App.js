@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import NewTT from './android/components/NewTT';
 import Road from './android/components/road';
 import NewL from './android/components/NewL';
 import Warning from './android/components/Listwarning'
+import location from './android/components/ListLocation'
+
 const homeNavi = createStackNavigator({
 
   MapScreen: {
@@ -13,10 +14,11 @@ const homeNavi = createStackNavigator({
       headerShown: false
     })
   },
-  NewTTScreen: {
-    screen: NewTT,
+
+  WarningScreen: {
+    screen: Warning,
     navigationOptions: () => ({
-      title: 'Map',
+      title: 'ADD NEW WARNING',
       headerStyle: {
         backgroundColor: 'gray',
         height: 40,
@@ -29,11 +31,10 @@ const homeNavi = createStackNavigator({
       },
     })
   },
-
-  WarningScreen: {
-    screen: Warning,
+  LocationScreen: {
+    screen: location,
     navigationOptions: () => ({
-      title: 'ADD NEW WARNING',
+      title: 'Map',
       headerStyle: {
         backgroundColor: 'gray',
         height: 40,

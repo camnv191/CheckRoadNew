@@ -12,9 +12,6 @@ export default class Listwarning extends Component {
         }
     }
 
-    Delete() {
-        SqliteHelper.deleteWarning()
-    }
 
     UNSAFE_componentWillMount = async () => {
         let listTemp = [];
@@ -42,9 +39,9 @@ export default class Listwarning extends Component {
                             <ScrollView>
                                     <View>
                                         <Text>--------------{item.Id}--------------</Text>
-                                        <Text>- {item.name}</Text>
-                                        <Text>- {item.icon}</Text>
-                                        <Text>- {item.iconname}</Text>
+                                        <Text>-Tên cảnh báo: {item.name}</Text>
+                                        {/* <Text>-Icon: {item.icon}</Text> */}
+                                        <Text>-Tên Icon: {item.iconname}</Text>
                                     </View>
                             </ScrollView>
                         )}

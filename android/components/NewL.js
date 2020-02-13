@@ -39,7 +39,6 @@ export class NewL extends Component {
                 console.log('User tapped custom button: ', response.customButton);
                 alert(response.customButton);
             } else {
-                // let source = response;
                 this.setState({
                     filePath: response,
                 });
@@ -52,13 +51,28 @@ export class NewL extends Component {
         this.clear2.setNativeProps({ text: '' })
     }
     New() {
-        if (this.state.name == null || this.state.filePath || this.state.iconname == null) {
-            Alert.alert('không để trống dữ liệu',
-                'Vui lòng nhập thông tin và chọn ảnh'
-            )
-        } return (console.log(this.state.filePath),
-            SqliteHelper.addWaring(this.state.name, this.state.filePath, this.state.iconname),
-            this.ClearInput())
+        // if(this.state.name =='' ||this.state.filePath==null){
+        //     alert('không được để trống dữ liệu')
+        // }
+        // let a = this.state.filePath.data + this.state.filePath.uri
+        // console.log(a)
+        // SqliteHelper.addWaring(this.state.name, a, this.state.iconname),
+        //     this.ClearInput()
+        // this.setState({
+        //     filePath: {},
+        // })
+        if(this.state.name == ''){
+            alert("Bạn phải nhập tên cảnh báo")
+        }else if(this.state.filePath=={}){
+            alert('Bạn phải chọn icon phù hợp')
+        }else{
+            SqliteHelper.addWaring(this.state.name, this.state.filePath, this.state.iconname)
+            this.setState({
+                name:'',
+                filePath:{},
+                iconname:''
+            })
+        }
     }
 
     UNSAFE_componentWillMount = async () => {
@@ -76,7 +90,17 @@ export class NewL extends Component {
     render() {
         return (
             <View>
-                <View>
+                <View style={{ alignItems: "center" }}>
+                    <Text style={{
+                        fontWeight: "bold",
+                        fontSize: 20,
+                        marginLeft: 10,
+                        color: 'red'
+                    }}>
+                        THÊM MỚI CẢNH BÁO
+                    </Text>
+                </View>
+                <View style={{ marginTop: 10 }}>
                     <Text
                         style={{
                             fontWeight: "bold",
@@ -113,9 +137,9 @@ export class NewL extends Component {
                 }}>
                     <Image
                         source={{
-                            uri: 'data:image/jpeg;base64,' + this.state.filePath.data,
+                            uri: 'data:image/png;base64,' + this.state.filePath.data,
                         }}
-                        style={{ width: 100, height: 100, marginTop: 10, marginBottom: 10 }}
+                        style={{ width: 50, height: 50, marginTop: 10, marginBottom: 10 }}
                     />
                     <Button title="Choose File" onPress={this.chooseFile.bind(this)} />
                 </View>
