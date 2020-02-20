@@ -5,6 +5,7 @@ import Road from './android/components/road';
 import NewL from './android/components/NewL';
 import Warning from './android/components/Listwarning'
 import location from './android/components/ListLocation'
+import custom from './android/components/Custom'
 
 const homeNavi = createStackNavigator({
 
@@ -18,7 +19,7 @@ const homeNavi = createStackNavigator({
   WarningScreen: {
     screen: Warning,
     navigationOptions: () => ({
-      title: 'ADD NEW WARNING',
+      title: 'Map',
       headerStyle: {
         backgroundColor: 'gray',
         height: 40,
@@ -40,6 +41,22 @@ const homeNavi = createStackNavigator({
         height: 40,
       },
       headerTintColor: 'green',
+      headerTitleAlign: 'center',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+      },
+    })
+  },
+
+  CustomScreen: {
+    screen: custom,
+    navigationOptions: () => ({
+      title: 'CHỌN CẢNH BÁO MUỐN HIỂN THỊ',
+      headerStyle: {
+        height: 40,
+      },
+      headerTintColor: 'red',
       headerTitleAlign: 'center',
       headerTitleStyle: {
         fontWeight: 'bold',

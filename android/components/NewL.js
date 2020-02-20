@@ -13,7 +13,6 @@ export class NewL extends Component {
         super(props);
         this.state = {
             name: "",
-            iconname: "",
             warning: [],
             filePath: {},
 
@@ -29,7 +28,7 @@ export class NewL extends Component {
             },
         };
         ImagePicker.showImagePicker(options, response => {
-            
+
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
@@ -50,16 +49,24 @@ export class NewL extends Component {
         this.clear2.setNativeProps({ text: '' })
     }
     New() {
+        for (let i = 0; i < this.state.warning.length; i++) {
+            if (this.state.warning[i].name == this.state.name) {
+                return (alert(
+                    'Trùng dữ liệu')
+                )
+            }
+        }
         if (this.state.name == '') {
             alert("Bạn phải nhập tên cảnh báo")
-        } else if (this.state.filePath == {}) {
+        } else if (this.state.filePath.uri == {}) {
             alert('Bạn phải chọn icon phù hợp')
         } else {
-            SqliteHelper.addWaring(this.state.name,this.state.filePath.uri, this.state.iconname)
+            SqliteHelper.addWaring(this.state.name, this.state.filePath.uri)
+            console.log('add tc' + this.state.name)
+            console.log('add tc' + this.state.filePath.uri)
             this.setState({
                 name: '',
                 filePath: {},
-                iconname: ''
             })
         }
     }
@@ -126,36 +133,13 @@ export class NewL extends Component {
                 }}>
                     <Image
                         source={{
-                            uri: 'data:image/png;base64,'+ this.state.filePath.data,
+                            uri: 'data:image/png;base64,' + this.state.filePath.data,
                         }}
                         style={{ width: 50, height: 50, marginTop: 10, marginBottom: 10 }}
                     />
                     <Button title="Choose File" onPress={this.chooseFile.bind(this)} />
                 </View>
-                <View>
-                    <Text
-                        style={{
-                            fontWeight: "bold",
-                            fontSize: 17,
-                            marginLeft: 10
-                        }}>Nhập tên icon:</Text>
-                </View>
-                <View style={{ alignItems: "center" }}>
-                    <TextInput
-                        value={this.state.iconname}
-                        onChangeText={iconname => this.setState({ iconname })}
-                        ref={component => this.clear2 = component}
-                        style={{
-                            height: 40,
-                            backgroundColor: 'azure',
-                            width: 350,
-                            borderWidth: 1,
-                            borderColor: 'black',
-                            marginTop: 10,
-                        }}
-                        placeholder="Nhập tên icon cảnh báo tại đây !.........."
-                    />
-                </View>
+
                 <View style={{ flexDirection: "row", marginTop: 5, justifyContent: "flex-start" }}>
                     <View style={{ width: 70, marginLeft: 16 }}>
                         <Button title='Add' onPress={() => this.New()} />

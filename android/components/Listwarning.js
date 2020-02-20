@@ -42,7 +42,6 @@ export default class Listwarning extends Component {
                                     <View>
                                         <Text>--------------{item.Id}--------------</Text>
                                         <Text>-Tên cảnh báo: {item.name}</Text>
-                                        <Text>-Tên Icon: {item.iconname}</Text>
                                     </View>
                                     <View style={{ flexDirection: "row", marginTop: 10 }}>
                                         <View>
@@ -63,14 +62,22 @@ export default class Listwarning extends Component {
                     />
                 </View>
                 <View>
-                    <TouchableOpacity style={{ flexDirection: "row", backgroundColor:'#74DF00', marginTop:5,padding:2 ,borderWidth:1, borderColor:'#2A0A0A' }} onPress={() => this.props.navigation.navigate('MapScreen')}>
+                    <TouchableOpacity style={{
+                        flexDirection: "row",
+                        backgroundColor: '#74DF00',
+                        marginTop: 5,
+                        padding: 2,
+                        borderWidth: 1,
+                        borderColor: '#2A0A0A'
+                    }}
+                        onPress={() => this.props.navigation.navigate('NewLScreen')}>
                         <View>
-                            <Image style={{width:30,height:25}}
+                            <Image style={{ width: 30, height: 25 }}
                                 source={require('./image/reply.png')}
                             />
                         </View>
                         <View>
-                            <Text style={{marginTop:2, fontWeight:"bold"}}>MAP</Text>
+                            <Text style={{ marginTop: 2, fontWeight: "bold" }}>New Warning</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

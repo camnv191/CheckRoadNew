@@ -73,3 +73,51 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+  {/* <Modal
+                                    animationType={'slide'}
+                                    transparent={false}
+                                    visible={this.state.isVisibles}
+                                    onRequestClose={() => {
+                                    }}>                                    
+                                        {this.state.cbwarning.map((val) => {
+                                            { tempCheckValues[val.name] = true }
+                                            return (
+                                                <View key={val.name} style={{ flexDirection: 'column', marginTop: 10, height:20 }}>
+                                                    <ScrollView>
+                                                        <Text style={{ marginLeft: 50 }}>
+                                                            {val.name}
+                                                        </Text>
+                                                        <View>
+                                                            <CheckBox
+                                                                style={{ marginTop: -24 }}
+                                                                value={this.state.checkBoxChecked[val.name]}
+                                                                onValueChange={() => this.checkBoxChanged(val.name, this.state.checkBoxChecked[val.name])}
+                                                            />
+                                                        </View> 
+                                                    </ScrollView>
+                                                </View >
+                                            )
+                                        })}
+
+                                    <View style={styles.modal}>
+                                        <Button
+                                            title="Return map"
+                                            onPress={() => {
+                                                this.setState({
+                                                    isVisibles: !this.state.isVisibles,
+                                                });
+                                            }}
+                                        />
+                                    </View>
+                                </Modal>
+                                <View>
+                                    <Button
+                                        title="CUSTOM WARNING"
+                                        onPress={() => {
+                                            this.setState({ isVisibles: true });
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        </View> */}

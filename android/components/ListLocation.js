@@ -36,8 +36,8 @@ export default class ListLocation extends Component {
             data={this.state.ListLocation}
             renderItem={({ item }) => (
               <ScrollView>
-                <View style={{width:400}}>
-                  <Text>--------------{item.Id}--------------</Text>
+                <View style={{width:250}}>
+                  <Text>-------------------{item.Id}------------------</Text>
                   <Text>-Tên cảnh báo: {item.name}</Text>
                   <Text>-Latitude: {item.latitude}</Text>
                   <Text>-Longitude: {item.longitude}</Text>

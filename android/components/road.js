@@ -5,11 +5,12 @@ import Geolocation from '@react-native-community/geolocation';
 import SqliteHelper from '../../sqlite.helper';
 import ModalDropdown from 'react-native-modal-dropdown';
 import DeviceInfo from 'react-native-device-info';
-
+import CheckBox from 'react-native-check-box'
 
 SqliteHelper.openDB();
 SqliteHelper.createRecordWarning();
 console.disableYellowBox = true;
+var tempCheckValues = [];
 let UniqueID = DeviceInfo.getUniqueId();
 export default class road extends Component {
     // latitude: 16.0324246,
@@ -25,9 +26,13 @@ export default class road extends Component {
             uid: "",
             note: "",
             isVisible: false,
+            isVisibles: false,
+            isChecked: [],
             latitude: 0,
             longitude: 0,
             Listwarning: [],
+            checkBoxChecked: [],
+            cbwarning: [],
             warning: [],
             latitudeMaker: 0,
             longitudeMaker: 0,
@@ -39,12 +44,12 @@ export default class road extends Component {
             }
         }
     }
+
     componentDidMount() {
         Geolocation.getCurrentPosition(position => {
             this.setState({
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
-                zoom: 10,
                 region: {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
@@ -80,13 +85,11 @@ export default class road extends Component {
             this.getLocation()
         })
     }
-    componentWillUnmount() {
-        this.focusListener.remove()
-    }
     componentWillMount = () => {
         this.setState({
             uid: UniqueID
         })
+
     }
 
     UNSAFE_componentWillMount = async () => {
@@ -99,6 +102,19 @@ export default class road extends Component {
         this.setState({
             Listwarning: listTemp
         });
+        this.ChecBoxName()
+    }
+
+    ChecBoxName = async () => {
+        let listTemppp = [];
+        let temp = await SqliteHelper.getWarning();
+        for (let i = 0; i < temp.rows.length; i++) {
+            const item = temp.rows.item(i);
+            listTemppp.push(item);
+        };
+        this.setState({
+            cbwarning: listTemppp
+        })
     }
 
     getLocation = async () => {
@@ -128,6 +144,7 @@ export default class road extends Component {
         } else {
             this.getTime(),
                 SqliteHelper.addRecordWaring(this.state.name, this.state.latitudeMaker, this.state.longitudeMaker, this.state.time, this.state.uid, this.state.note)
+            this.getLocation()
             this.setState({
                 message: false,
                 message1: false,
@@ -136,7 +153,6 @@ export default class road extends Component {
             })
             alert("thêm thành công")
         }
-
     }
     onPress(data) {
         let lat = data.nativeEvent.coordinate.latitude;
@@ -153,13 +169,26 @@ export default class road extends Component {
         })
     }
 
+    onclicks = id => {
+        const { checkBoxChecked } = this.state;
+        const isInclude = checkBoxChecked.includes(id)
+        if (!isInclude) {
+            this.setState(state => ({
+                checkBoxChecked: [...state.checkBoxChecked, ...[id]],
+            }));
+        } else {
+            this.setState(state => ({
+                checkBoxChecked: state.checkBoxChecked.filter(item => item !== id),
+            }));
+        }
+        this.getLocation()
+    }
+
 
     render() {
         const navigation = this.props;
         return (
-
             <View style={{ flex: 1 }}>
-
                 <MapView
                     draggable
                     provider={PROVIDER_GOOGLE}
@@ -167,7 +196,6 @@ export default class road extends Component {
                     region={this.state.region
                     }
                     onPress={this.onPress.bind(this)}
-                    zoomEnabled={true}
                 >
                     <Marker coordinate={this.state} >
                         <Callout>
@@ -186,38 +214,105 @@ export default class road extends Component {
                     {this.state.warning.length > 0 && this.state.warning.map(marker => (
                         <Marker
                             coordinate={marker}
-                            title={marker.name} 
-                            pinColor={'yellow'}
-                            description={marker.description}
+                            title={marker.name}
                         >
                             <Image
                                 source={{
                                     uri: marker.icon,
                                 }}
-                                style={{ width: 30, height: 30}}
+                                style={{ width: 30, height: 30 }}
                             />
                         </Marker>
 
                     ))}
-
-
                 </MapView>
 
                 <View style={{ flex: 1.5, marginTop: -35, flexDirection: "column" }}>
-                    <View op style={{ flex: 0, width: 70, marginLeft: 350 }}>
-                        <TouchableOpacity onPress={() => this.componentDidMount()}>
+                    <View style={{ flex: 0, marginLeft: 340 }}>
+                        <TouchableOpacity style={{ width: 70 }}
+                            onPress={() => this.componentDidMount()}>
                             <Image
                                 source={require('./image/compass.png')}
                             />
                         </TouchableOpacity>
                     </View>
                     <View style={{ flex: 2, flexDirection: "row" }}>
-                        <View style={{ flex: 1, width: 65, justifyContent: "center", marginLeft: 10 }}>
-                            <Button title='New Warning' onPress={() => this.props.navigation.navigate('NewLScreen')} />
+                        <View style={{ flex: 1, width: 65, justifyContent: "center", marginLeft: 13 }}>
+                            <Button
+                                style={{ backgroundColor: 'red' }}
+                                title='New Warning'
+                                onPress={() => this.props.navigation.navigate('NewLScreen')} />
                         </View>
-                        <View style={{ flex: 2 }}>
+                        <View style={{ flex: 2, alignItems: "center", marginLeft: -30 }}>
+                            <View style={{ width: 90, marginTop: 7 }}>
+                                <Modal
+                                    animationType={'slide'}
+                                    transparent={false}
+                                    visible={this.state.isVisibles}
+                                    onRequestClose={() => {
+                                    }}>
+                                    <View style={{ alignItems: "center", marginTop: 20 }}>
+                                        <Text style={{
+                                            fontWeight: "bold",
+                                            fontSize: 20,
+                                            marginLeft: 10,
+                                            color: "#B40404"
+                                        }}>
+                                            CHỌN CẢNH BÁO MUỐN HIỂN THỊ:
+                                    </Text>
+                                    </View>
+                                    <View style={{height:300}}>
+                                        <ScrollView>
+                                        {this.state.cbwarning.map((val) => {
+                                            // console.log('this.state.checkBoxChecked.includes(val.name)' + ' '+this.state.checkBoxChecked.includes(val.name))
+                                            return (
+                                                <View key={val.name} style={{ flexDirection: 'column', marginTop: 10,marginLeft:50 }}>
+                                                    <CheckBox
+                                                        onClick={() => this.onclicks(val.name)}
+                                                        isChecked={this.state.checkBoxChecked.includes(val.name)}
+                                                        rightText={val.name}
+                                                        headerName="Chọn tất cả"
+                                                        checkedCheckBoxColor='red'
+                                                        checkBoxColor='blue'
+                                                    />
+                                                </View >
+                                            )
+                                        })}
+                                        </ScrollView>
+                                    </View>
+                                    <View style={styles.modal}>
+                                        <TouchableOpacity style={{ width: 70 }}
+                                            onPress={() => {
+                                                this.setState({
+                                                    isVisibles: !this.state.isVisibles,
+                                                });
+                                            }}>
+                                            <View style={{flexDirection:"row",borderWidth:1, padding:3, marginRight:-3, backgroundColor:'pink'}}>
+                                                <View>
+                                                    <Image
+                                                        style={{width:20, height:20}}
+                                                        source={require('./image/filter.png')}
+                                                    />
+                                                </View>
+                                                <View style={{justifyContent:"center"}}>
+                                                    <Text>FILTER</Text>
+                                                </View>
+                                            </View>
+                                        </TouchableOpacity>
+                                    </View>
+                                </Modal>
+                                <View>
+                                    <Button
+                                        title="CUSTOM WARNING"
+                                        onPress={() => {
+                                            this.setState({ isVisibles: true });
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        </View>
 
-                        </View>
+
                         <View style={styles.container}>
                             <Modal
                                 animationType={'slide'}
@@ -255,7 +350,6 @@ export default class road extends Component {
                                     flex: 1,
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    // marginTop: 
                                 }}>
                                     <ModalDropdown
                                         textStyle={{
@@ -303,28 +397,22 @@ export default class road extends Component {
                                             title='ADD'
                                             onPress={() => this.New()} />
                                     </View>
-                                    <View style={{ width: 100, marginLeft: 20 }}>
+                                </View>
+
+                                <View style={styles.modal}>
+                                    <View style={{ marginTop: -85, marginLeft: -100 }}>
                                         <Button
-                                            title="Show list"
+                                            title="Return map"
                                             onPress={() => {
-                                                this.setState({ isVisible: !this.state.isVisible });
-                                                this.props.navigation.navigate('LocationScreen')
+                                                this.setState({
+                                                    isVisible: !this.state.isVisible,
+                                                    message: false,
+                                                    message1: false,
+                                                });
+                                                this.getLocation()
                                             }}
                                         />
                                     </View>
-                                </View>
-                                <View style={styles.modal}>
-                                    <Button
-                                        title="Return map"
-                                        onPress={() => {
-                                            this.setState({
-                                                isVisible: !this.state.isVisible,
-                                                message: false,
-                                                message1: false,
-                                            });
-                                        }}
-                                    />
-
                                 </View>
                             </Modal>
                             <View style={{ flex: 1, width: 120, marginTop: 7, marginRight: 45 }}>
@@ -338,7 +426,6 @@ export default class road extends Component {
                         </View>
                     </View>
                 </View>
-
             </View>
         )
     }
@@ -352,7 +439,7 @@ const styles = StyleSheet.create({
     modal: {
         flex: 1,
         alignItems: 'center',
-        padding: 100,
+        padding: 50,
     },
     text: {
         color: '#3f2949',
