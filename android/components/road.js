@@ -36,14 +36,30 @@ export default class road extends Component {
             warning: [],
             latitudeMaker: 0,
             longitudeMaker: 0,
+            dataSource:[],
             region: {
                 latitude: 0,
-                longitude: 0,
                 latitudeDelta: 0.01,
+                longitude: 0,
                 longitudeDelta: 0.01,
             }
         }
     }
+
+    getDataUsingGet(){
+        fetch('http://192.168.56.1:3100/warning', {
+            method: 'GET'
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            alert(JSON.stringify(responseJson));
+            console.log(responseJson);
+        })
+        .catch((error) => {
+            alert(JSON.stringify(error));
+            console.error(error);
+        });
+      }
 
     componentDidMount() {
         Geolocation.getCurrentPosition(position => {
@@ -62,9 +78,10 @@ export default class road extends Component {
             error => this.setState({ error: error.message }),
             { enableHighAccuracy: true, timeout: 1000, maximumAge: 1000 }
         );
-
         this.reload()
         this.getTime()
+        this.getLocation()
+        this.getDataUsingGet()
     }
 
     getTime() {
@@ -89,8 +106,7 @@ export default class road extends Component {
         this.setState({
             uid: UniqueID
         })
-
-    }
+     }
 
     UNSAFE_componentWillMount = async () => {
         let listTemp = [];
@@ -119,7 +135,7 @@ export default class road extends Component {
 
     getLocation = async () => {
         let listTempp = [];
-        let temp = await SqliteHelper.getWarningAndRecordWarning();
+        let temp = await SqliteHelper.getByCheckbox(this.state.checkBoxChecked);
         for (let i = 0; i < temp.rows.length; i++) {
             const item = temp.rows.item(i);
             listTempp.push(item);
@@ -160,12 +176,12 @@ export default class road extends Component {
         this.setState({
             latitudeMaker: lat,
             longitudeMaker: long,
-            region: {
-                latitude: lat,
-                longitude: long,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-            }
+            // region: {
+            //     latitude: lat,
+            //     longitude: long,
+            //     latitudeDelta: 0.01,
+            //     longitudeDelta: 0.01,
+            // }
         })
     }
 
@@ -184,51 +200,56 @@ export default class road extends Component {
         this.getLocation()
     }
 
+    // onRegionChange(data) {
+    //     console.log(data)
+    // }
 
     render() {
         const navigation = this.props;
         return (
-            <View style={{ flex: 1 }}>
-                <MapView
-                    draggable
-                    provider={PROVIDER_GOOGLE}
-                    style={{ flex: 8 }}
-                    region={this.state.region
-                    }
-                    onPress={this.onPress.bind(this)}
-                >
-                    <Marker coordinate={this.state} >
-                        <Callout>
-                            <Text style={{ fontWeight: 'bold' }}>Vị trí của bạn</Text>
-                        </Callout>
-                    </Marker>
-
-                    <Marker coordinate={{
-                        latitude: this.state.latitudeMaker,
-                        longitude: this.state.longitudeMaker
-                    }}
-                        pinColor={'blue'}
-                    />
-
-
-                    {this.state.warning.length > 0 && this.state.warning.map(marker => (
-                        <Marker
-                            coordinate={marker}
-                            title={marker.name}
-                        >
-                            <Image
-                                source={{
-                                    uri: marker.icon,
-                                }}
-                                style={{ width: 30, height: 30 }}
-                            />
+            <View style={{ flex: 1, flexDirection: "column" }}>
+                <View style={{ flex: 8 }}>
+                    <MapView
+                        style={{ with: '100%', height: "100%" }}
+                        draggable
+                        provider={PROVIDER_GOOGLE}
+                        region={this.state.region}
+                        onPress={this.onPress.bind(this)}
+                    // onRegionChangeComplete={this.onRegionChange.bind(this)}
+                    >
+                        <Marker coordinate={this.state} >
+                            <Callout>
+                                <Text style={{ fontWeight: 'bold' }}>Vị trí của bạn</Text>
+                            </Callout>
                         </Marker>
 
-                    ))}
-                </MapView>
+                        <Marker
+                            coordinate={{
+                                latitude: this.state.latitudeMaker,
+                                longitude: this.state.longitudeMaker
+                            }}
+                            pinColor={'blue'}
+                        />
 
-                <View style={{ flex: 1.5, marginTop: -35, flexDirection: "column" }}>
-                    <View style={{ flex: 0, marginLeft: 340 }}>
+
+                        {this.state.warning.length > 0 && this.state.warning.map(marker => (
+                            <Marker
+                                coordinate={marker}
+                                title={marker.name}
+                            >
+                                <Image
+                                    source={{
+                                        uri: marker.icon,
+                                    }}
+                                    style={{ width: 30, height: 30 }}
+                                />
+                            </Marker>
+
+                        ))}
+                    </MapView>
+                </View>
+                <View style={{ position: 'absolute', flexDirection: "column", flex: 1.5, bottom: 10, justifyContent: "flex-end" }}>
+                    <View style={{ flex: 1, marginLeft: 340, marginBottom: 5 }}>
                         <TouchableOpacity style={{ width: 70 }}
                             onPress={() => this.componentDidMount()}>
                             <Image
@@ -237,196 +258,212 @@ export default class road extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={{ flex: 2, flexDirection: "row" }}>
-                        <View style={{ flex: 1, width: 65, justifyContent: "center", marginLeft: 13 }}>
+                        <View style={{ flex: 1, width: 65, justifyContent: "center", marginLeft: 13, opacity: 0.9 }}>
                             <Button
-                                style={{ backgroundColor: 'red' }}
+                                color={'black'}
                                 title='New Warning'
                                 onPress={() => this.props.navigation.navigate('NewLScreen')} />
                         </View>
                         <View style={{ flex: 2, alignItems: "center", marginLeft: -30 }}>
-                            <View style={{ width: 90, marginTop: 7 }}>
+                            <View style={{ width: 90 }}>
                                 <Modal
                                     animationType={'slide'}
                                     transparent={false}
                                     visible={this.state.isVisibles}
                                     onRequestClose={() => {
                                     }}>
-                                    <View style={{ alignItems: "center", marginTop: 20 }}>
-                                        <Text style={{
-                                            fontWeight: "bold",
-                                            fontSize: 20,
-                                            marginLeft: 10,
-                                            color: "#B40404"
-                                        }}>
-                                            CHỌN CẢNH BÁO MUỐN HIỂN THỊ:
-                                    </Text>
+                                    <View style={{ backgroundColor: "gray", width: '100%', height: 30, justifyContent: 'center' }}>
+                                        <TouchableOpacity style={{ flexDirection: "row" }}
+                                            onPress={() => this.setState({
+                                                isVisibles: !this.state.isVisibles,
+                                            }) }
+                                    >
+                                            <View>
+                                            <Image
+                                                style={{ width: 20, height: 20, marginLeft: 10 }}
+                                                source={require('./image/back.png')} /></View>
+                                        <View style={{ marginLeft: 5 }}>
+                                            <Text>RETURN MAP</Text>
+                                        </View>
+                                        </TouchableOpacity>
                                     </View>
-                                    <View style={{height:300}}>
-                                        <ScrollView>
+                                <View style={{ alignItems: "center", marginTop: 20 }}>
+                                    <Text style={{
+                                        fontWeight: "bold",
+                                        fontSize: 20,
+                                        marginLeft: 10,
+                                        color: "#B40404"
+                                    }}>
+                                        CHỌN CẢNH BÁO MUỐN HIỂN THỊ:
+                                    </Text>
+                                </View>
+                                <View style={{ height: 300 }}>
+                                    <ScrollView>
                                         {this.state.cbwarning.map((val) => {
-                                            // console.log('this.state.checkBoxChecked.includes(val.name)' + ' '+this.state.checkBoxChecked.includes(val.name))
                                             return (
-                                                <View key={val.name} style={{ flexDirection: 'column', marginTop: 10,marginLeft:50 }}>
+                                                <View key={val.name} style={{ flexDirection: 'column', marginTop: 10, marginLeft: 50 }}>
                                                     <CheckBox
                                                         onClick={() => this.onclicks(val.name)}
                                                         isChecked={this.state.checkBoxChecked.includes(val.name)}
                                                         rightText={val.name}
-                                                        headerName="Chọn tất cả"
                                                         checkedCheckBoxColor='red'
                                                         checkBoxColor='blue'
                                                     />
                                                 </View >
                                             )
                                         })}
-                                        </ScrollView>
-                                    </View>
-                                    <View style={styles.modal}>
-                                        <TouchableOpacity style={{ width: 70 }}
-                                            onPress={() => {
-                                                this.setState({
-                                                    isVisibles: !this.state.isVisibles,
-                                                });
-                                            }}>
-                                            <View style={{flexDirection:"row",borderWidth:1, padding:3, marginRight:-3, backgroundColor:'pink'}}>
-                                                <View>
-                                                    <Image
-                                                        style={{width:20, height:20}}
-                                                        source={require('./image/filter.png')}
-                                                    />
-                                                </View>
-                                                <View style={{justifyContent:"center"}}>
-                                                    <Text>FILTER</Text>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
-                                    </View>
-                                </Modal>
-                                <View>
-                                    <Button
-                                        title="CUSTOM WARNING"
-                                        onPress={() => {
-                                            this.setState({ isVisibles: true });
-                                        }}
-                                    />
+                                    </ScrollView>
                                 </View>
-                            </View>
-                        </View>
-
-
-                        <View style={styles.container}>
-                            <Modal
-                                animationType={'slide'}
-                                transparent={false}
-                                visible={this.state.isVisible}
-                                onRequestClose={() => {
-                                }}>
-                                <View style={{ alignItems: "center", marginTop: 20 }}>
-                                    <Text style={{
-                                        fontWeight: "bold",
-                                        fontSize: 20,
-                                        marginLeft: 10,
-                                        color: "#00F900"
-                                    }}>
-                                        THÊM VỊ TRÍ CẢNH BÁO MỚI
-                                    </Text>
-                                </View>
-                                {this.state.message ?
-                                    (<Text style={{ fontSize: 15, color: 'red', marginTop: 20, marginLeft: 10 }}>
-                                        Mời chọn vị trí cần thêm cảnh báo
-                                </Text>) : null}
-                                <View style={{ marginTop: 10 }}>
-                                    <Text
-                                        style={{
-                                            fontWeight: "bold",
-                                            fontSize: 17,
-                                            marginLeft: 10
-                                        }}>Chọn tên cảnh báo:</Text>
-                                </View>
-                                {this.state.message1 ?
-                                    (<Text style={{ fontSize: 15, color: 'red', marginLeft: 10 }}>
-                                        Mời chọn cảnh báo để tiếp tục
-                                </Text>) : null}
-                                <View style={{
-                                    flex: 1,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                    <ModalDropdown
-                                        textStyle={{
-                                            fontSize: 14,
-                                            color: 'black',
-                                            paddingTop: 10,
-                                            paddingLeft: 10,
-                                            height: 40,
-                                            backgroundColor: 'azure',
-                                            width: 350,
-                                            borderWidth: 1,
-                                            borderColor: 'black',
-                                        }}
-                                        defaultValue="Chọn cảnh báo........"
-                                        options={this.state.Listwarning}
-                                        onSelect={(name) => this.setState({ name: (String(this.state.Listwarning[name])) })}
-                                    />
-                                </View>
-                                <View>
-                                    <Text
-                                        style={{
-                                            fontWeight: "bold",
-                                            fontSize: 16,
-                                            marginLeft: 10
-                                        }}>Thêm ghi chú:</Text>
-                                </View>
-                                <View style={{ alignItems: "center", marginTop: 15 }}>
-                                    <TextInput value={this.state.note}
-                                        onChangeText={note => this.setState({ note })}
-                                        style={{
-                                            height: 40,
-                                            backgroundColor: 'azure',
-                                            width: 350,
-                                            borderWidth: 1,
-                                            borderColor: 'black',
-                                        }}
-                                        placeholder="Nhập ghi chú tại đây !.........."
-                                    />
-                                </View>
-
-                                <View style={{ marginTop: 40, marginLeft: 20, flexDirection: "row" }}>
-                                    <View>
-                                        <Button
-                                            style={{ marginRight: 30 }}
-                                            title='ADD'
-                                            onPress={() => this.New()} />
-                                    </View>
-                                </View>
-
                                 <View style={styles.modal}>
-                                    <View style={{ marginTop: -85, marginLeft: -100 }}>
-                                        <Button
-                                            title="Return map"
-                                            onPress={() => {
-                                                this.setState({
-                                                    isVisible: !this.state.isVisible,
-                                                    message: false,
-                                                    message1: false,
-                                                });
-                                                this.getLocation()
-                                            }}
-                                        />
-                                    </View>
+                                    <TouchableOpacity style={{ width: 70 }}
+                                        onPress={() => {
+                                            SqliteHelper.getByCheckbox(this.state.checkBoxChecked);
+                                            this.setState({
+                                                isVisibles: !this.state.isVisibles,
+                                            });
+                                            this.getLocation()
+                                        }}>
+                                        <View style={{ flexDirection: "row", borderWidth: 1, padding: 3, marginRight: -3, backgroundColor: 'pink' }}>
+                                            <View>
+                                                <Image
+                                                    style={{ width: 20, height: 20 }}
+                                                    source={require('./image/filter.png')}
+                                                />
+                                            </View>
+                                            <View style={{ justifyContent: "center" }}>
+                                                <Text>FILTER</Text>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
-                            </Modal>
-                            <View style={{ flex: 1, width: 120, marginTop: 7, marginRight: 45 }}>
+                                </Modal>
+                            <View style={{ marginLeft: -20, opacity: 0.9 }}>
                                 <Button
-                                    title="WARNING INFOMATION"
+                                    title="warning options"
+                                    color={'black'}
                                     onPress={() => {
-                                        this.setState({ isVisible: true });
+                                        this.setState({ isVisibles: true });
                                     }}
                                 />
                             </View>
                         </View>
                     </View>
+
+                    <View style={styles.container}>
+                        <Modal
+                            animationType={'slide'}
+                            transparent={false}
+                            visible={this.state.isVisible}
+                            onRequestClose={() => {
+                            }}>
+                            <View style={{ alignItems: "center", marginTop: 20 }}>
+                                <Text style={{
+                                    fontWeight: "bold",
+                                    fontSize: 20,
+                                    marginLeft: 10,
+                                    color: "#00F900"
+                                }}>
+                                    THÊM VỊ TRÍ CẢNH BÁO MỚI
+                                    </Text>
+                            </View>
+                            {this.state.message ?
+                                (<Text style={{ fontSize: 15, color: 'red', marginLeft: 10 }}>
+                                    Mời chọn vị trí cần thêm cảnh báo
+                                </Text>) : null}
+                            <View style={{ marginTop: 10 }}>
+                                <Text
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: 17,
+                                        marginLeft: 10
+                                    }}>Chọn tên cảnh báo:</Text>
+                            </View>
+                            {this.state.message1 ?
+                                (<Text style={{ fontSize: 15, color: 'red', marginLeft: 10 }}>
+                                    Mời chọn cảnh báo để tiếp tục
+                                </Text>) : null}
+                            <View style={{
+                                flex: 1,
+                                alignItems: 'center',
+                                marginTop: 15
+                            }}>
+                                <ModalDropdown
+                                    textStyle={{
+                                        fontSize: 14,
+                                        color: 'black',
+                                        paddingTop: 10,
+                                        paddingLeft: 10,
+                                        height: 40,
+                                        backgroundColor: 'azure',
+                                        width: 350,
+                                        borderWidth: 1,
+                                        borderColor: 'black',
+                                    }}
+                                    defaultValue="Chọn cảnh báo........"
+                                    options={this.state.Listwarning}
+                                    onSelect={(name) => this.setState({ name: (String(this.state.Listwarning[name])) })}
+                                />
+                            </View>
+                            <View>
+                                <Text
+                                    style={{
+                                        fontWeight: "bold",
+                                        fontSize: 16,
+                                        marginLeft: 10
+                                    }}>Thêm ghi chú:</Text>
+                            </View>
+                            <View style={{ alignItems: "center", marginTop: 15 }}>
+                                <TextInput value={this.state.note}
+                                    onChangeText={note => this.setState({ note })}
+                                    style={{
+                                        height: 40,
+                                        backgroundColor: 'azure',
+                                        width: 350,
+                                        borderWidth: 1,
+                                        borderColor: 'black',
+                                    }}
+                                    placeholder="Nhập ghi chú tại đây !.........."
+                                />
+                            </View>
+
+                            <View style={{ marginTop: 40, marginLeft: 20, flexDirection: "row" }}>
+                                <View>
+                                    <Button
+                                        style={{ marginRight: 30 }}
+                                        title='ADD'
+                                        onPress={() => this.New()} />
+                                </View>
+                            </View>
+
+                            <View style={styles.modal}>
+                                <View style={{ marginTop: -85, marginLeft: -100 }}>
+                                    <Button
+                                        title="Return map"
+                                        onPress={() => {
+                                            this.setState({
+                                                isVisible: !this.state.isVisible,
+                                                message: false,
+                                                message1: false,
+                                            });
+                                            this.getLocation()
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                        </Modal>
+                        <View style={{ flex: 1, width: 120, marginRight: 90, opacity: 0.9 }}>
+                            <Button
+                                color={'black'}
+                                title="WARNING INFOMATION"
+                                onPress={() => {
+                                    this.setState({ isVisible: true });
+                                }}
+                            />
+                        </View>
+                    </View>
                 </View>
             </View>
+            </View >
         )
     }
 }

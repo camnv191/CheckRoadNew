@@ -70,14 +70,14 @@ export default class Listwarning extends Component {
                         borderWidth: 1,
                         borderColor: '#2A0A0A'
                     }}
-                        onPress={() => this.props.navigation.navigate('NewLScreen')}>
+                        onPress={() => this.props.navigation.navigate('MapScreen')}>
                         <View>
                             <Image style={{ width: 30, height: 25 }}
                                 source={require('./image/reply.png')}
                             />
                         </View>
                         <View>
-                            <Text style={{ marginTop: 2, fontWeight: "bold" }}>New Warning</Text>
+                            <Text style={{ marginTop: 2, fontWeight: "bold" }}>RETURN MAP</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

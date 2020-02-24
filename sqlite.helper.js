@@ -74,16 +74,6 @@ errorCallback = () => {
     });
   };
 
-  static getWarningAndRecordWarning = () => {
-    return new Promise(function (resolve, reject) {
-      db.transaction( tx => {
-        var sql = "SELECT warning.icon,warning.name, recordWarning.latitude, recordWarning.longitude FROM warning  INNER JOIN recordWarning ON  warning.name = recordWarning.name";
-        tx.executeSql(sql, [], (tx, results) => {
-          resolve(results);
-        });
-      });
-    });
-  };
 
   static  async addWaring(name, icon) {
     return await new Promise(function (resolve, reject){
@@ -107,10 +97,13 @@ errorCallback = () => {
     });
   };
 
-  static getByCheckbox = () => {
+  static getByCheckbox = (args)  => {
     return new Promise(function (resolve, reject) {
       db.transaction( tx => {
         var sql = "SELECT warning.name, warning.icon, recordWarning.latitude, recordWarning.longitude  FROM warning INNER JOIN recordWarning ON warning.name = recordWarning.name";
+        if(args && args.length > 0) {
+          sql += ` WHERE ${args.map(v => `warning.name = '${v}'`).join(" OR ")}`;
+        }
         tx.executeSql(sql, [], (tx, results) => {
           resolve(results);
         });

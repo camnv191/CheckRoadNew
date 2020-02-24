@@ -19,7 +19,7 @@ const homeNavi = createStackNavigator({
   WarningScreen: {
     screen: Warning,
     navigationOptions: () => ({
-      title: 'Map',
+      title: 'New Warning',
       headerStyle: {
         backgroundColor: 'gray',
         height: 40,
