@@ -151,13 +151,13 @@ export default class road extends Component {
         return number > 0 ? number : `0${number}`;
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         this.setState({
             uid: UniqueID
         })
     }
 
-    async postRecordData() {
+    postRecordData() {
         if (this.state.latitudeMaker == 0 || this.state.longitudeMaker == 0) {
             this.setState({
                 message: true,
@@ -169,7 +169,7 @@ export default class road extends Component {
                 message1: true,
             })
         } else {
-            await this.getTime();
+            this.getTime();
             var dataToSend = { name: this.state.name, latitude: this.state.latitudeMaker, longitude: this.state.longitudeMaker, time: this.state.time, uid: this.state.uid, note: this.state.note };
             var formBody = [];
             for (var key in dataToSend) {
@@ -199,8 +199,8 @@ export default class road extends Component {
                 name: '',
                 note: '',
             })
+            this.setDataToMap()
         }
-        this.getRecordData()
     }
 
     newLocation(data) {

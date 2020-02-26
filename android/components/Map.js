@@ -44,9 +44,3 @@ export default class Map extends Component {
         )
     }
 }
-// const styles = StyleSheet.create({
-//     mapViewStyle: {
-//         width: '100%',
-//         height: "100%"
-//     }
-// })
