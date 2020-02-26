@@ -1,77 +1,71 @@
-import React, { Component } from 'react'
-import { Text, StyleSheet, View, Image, FlatList, ScrollView, TouchableOpacity } from 'react-native'
-import CheckBox from 'react-native-check-box'
-import SqliteHelper from '../../sqlite.helper';
+import React from 'react';
+import { View, Text, Image, Button } from 'react-native';
+import ImagePicker from 'react-native-image-picker';
 
 
-SqliteHelper.openDB();
+const createFormData = (photo, body) => {
+  const data = new FormData();
+  data.append('photo', {
+    name: photo.fileName,
+    type: photo.type,
+    uri:
+      Platform.OS === 'android' ? photo.uri : photo.uri.replace('file://', ''),
+  });
+  Object.keys(body).forEach(key => {
+    data.append(key, body[key]);
+  });
+  return data;
+};  
 
-export default class Custom extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      isChecked: [],
-      name: '',
-      warning: [],
-    }
-  }
- 
-  UNSAFE_componentWillMount = async () => {
-    let listTemp = [];
-    let temp = await SqliteHelper.getWarningName();
-    for (let i = 0; i < temp.rows.length; i++) {
-      const item = temp.rows.item(i);
-      listTemp.push(item);
+export default class App extends React.Component {
+  
+  state = {
+    photo: null,
+  };
+
+  handleChoosePhoto = () => {
+    const options = {
+      noData: true,
     };
-    this.setState({
-      warning: listTemp
-    }); console.log(listTemp)
-  }
+    ImagePicker.launchImageLibrary(options, response => {
+      if (response.uri) {
+        this.setState({ photo: response });
+      }
+    });
+  };
+  
+  handleUploadPhoto = () => {
+    fetch('http://192.168.56.1:3100/api/upload', {
+      method: 'POST',
+      body: createFormData(this.state.photo, { userId: '123' }),
+    })
+      .then(response => response.json())
+      .then(response => {
+        console.log('upload succes', response);
+        alert('Upload success!');
+        this.setState({ photo: null });
+      })
+      .catch(error => {
+        console.log('upload error', error);
+        alert('Upload failed!');
+      });
+  };
 
   render() {
+    const { photo } = this.state;
     return (
-      <View style={{ flexDirection: "column", flex: 1 }}>
-        <View style={{ height: '80%' }}>
-          <FlatList
-            keyExtractor={(item, index) => index.toString()}
-            data={this.state.warning}
-            renderItem={({ item }) => (
-              <ScrollView >
-                <View>
-                  <CheckBox
-                    style={{ flex: 1, padding: 10 }}
-                    onClick={() => {
-                      this.setState({
-                        isChecked: !this.state.isChecked
-                      })
-                    }}
-                    isChecked={this.state.isChecked}
-                    leftText={'-' + ' ' + item.name}
-                  />
-                </View>
-              </ScrollView>
-            )}
-          />
-        </View>
-        <View style={{ alignItems: "center" }}>
-          <TouchableOpacity style={{
-            flexDirection: "row",
-            width: 70, backgroundColor: '#74DF00', alignItems: "center", borderWidth: 1, borderColor: '#2A0A0A'
-          }}
-            onPress={() => this.props.navigation.navigate('MapScreen')}>
-            <View>
-              <Image style={{ width: 30, height: 25 }}
-                source={require('./image/reply.png')}
-              />
-            </View>
-            <View>
-              <Text style={{ marginTop: 2, fontWeight: "bold" }}>MAP</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        {photo && (
+          <React.Fragment>
+            <Image
+              source={{ uri: photo.uri }}
+              style={{ width: 300, height: 300 }}
+            />
+            <Button title="Upload" onPress={this.handleUploadPhoto} />
+          </React.Fragment>
+        )}
+        <Button title="Choose Photo" onPress={this.handleChoosePhoto} />
       </View>
-    )
+    );
   }
 }
-
-const styles = StyleSheet.create({})
