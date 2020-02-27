@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, Button, Alert, Image, StyleSheet } from 'react-native'
+import { Text, View, Button, Alert, Image, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 import ImagePicker from 'react-native-image-picker';
 
@@ -103,35 +103,40 @@ export class NewWarning extends Component {
 
     render() {
         return (
-            <View>
-                <View style={styles.container}>
-                    <Text style={styles.textStyleTop}> THÊM MỚI CẢNH BÁO </Text>
-                </View>
+            <TouchableWithoutFeedback
+                style={{ flex: 1 }}
+                onPress={Keyboard.dismiss}
+            >
                 <View>
-                    <Text style={styles.textStyle}>Nhập tên cảnh báo mới:</Text>
-                </View>
-                <View style={styles.container}>
-                    <TextInput value={this.state.name}
-                        onChangeText={name => this.setState({ name })}
-                        ref={component => this.clear = component}
-                        style={styles.textInputStyle}
-                        placeholder="Nhập tên cảnh báo tại đây !.........."
-                    />
-                </View>
-                <View>
-                    <Text style={styles.textStyle}>Chọn icon cảnh báo:</Text>
-                </View>
-                <View style={styles.container}>
-                    <Image
-                        source={{ uri: this.state.filePath.uri }}
-                        style={styles.imageStyle}
-                    />
-                    <Button title="Choose File" onPress={this.chooseFile.bind(this)} />
-                </View>
-                <View style={styles.buttonStyle}>
-                    <Button title='Add' onPress={() => this.validateForm()} />
-                </View>
-            </View >
+                    <View style={styles.container}>
+                        <Text style={styles.textStyleTop}> THÊM MỚI CẢNH BÁO </Text>
+                    </View>
+                    <View>
+                        <Text style={styles.textStyle}>Nhập tên cảnh báo mới:</Text>
+                    </View>
+                    <View style={styles.container}>
+                        <TextInput value={this.state.name}
+                            onChangeText={name => this.setState({ name })}
+                            ref={component => this.clear = component}
+                            style={styles.textInputStyle}
+                            placeholder="Nhập tên cảnh báo tại đây !.........."
+                        />
+                    </View>
+                    <View>
+                        <Text style={styles.textStyle}>Chọn icon cảnh báo:</Text>
+                    </View>
+                    <View style={styles.container}>
+                        <Image
+                            source={{ uri: this.state.filePath.uri }}
+                            style={styles.imageStyle}
+                        />
+                        <Button title="Choose File" onPress={this.chooseFile.bind(this)} />
+                    </View>
+                    <View style={styles.buttonStyle}>
+                        <Button title='Add' onPress={() => this.validateForm()} />
+                    </View>
+                </View >
+            </TouchableWithoutFeedback>
         )
     }
 }
