@@ -32,7 +32,7 @@
     "react-navigation-stack": "^2.0.15",
     "rn-checkbox-list": "0.0.9",
     "rxjs": "^6.5.4",
-    "validator": "^12.2.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@babel/core": "7.8.3",
